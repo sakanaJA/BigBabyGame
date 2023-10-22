@@ -190,13 +190,19 @@ Game.Draw = function(context, snake) {
     context.fill();
   };
   
-  // Check Collision with walls
+  // Check Collision with walls or itself
   this.collision = function(nx, ny) {  
     if (nx == -1 || nx == (snake.stage.width / snake.stage.conf.cw) || ny == -1 || ny == (snake.stage.height / snake.stage.conf.cw)) {
       return true;
     }
+    for (var i = 0; i < snake.stage.length.length; i++) {
+      if (snake.stage.length[i].x == nx && snake.stage.length[i].y == ny) {
+        return true;
+      }
+    }
     return false;    
-	}
+  }
+
 };
 
 
