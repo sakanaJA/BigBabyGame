@@ -1,0 +1,21 @@
+body {
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #ffedec;
+    color: #ff6b9d;
+}
+
+h3 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 30px;
+    text-shadow: 2px 2px 4px #ffb3c2;
+}
+
+canvas {
+    border: 3px solid #ff6b9d;
+    border-radius: 15px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(45deg, #ffedec, #b8e0fa);
+    margin-top: 20px;
+}
