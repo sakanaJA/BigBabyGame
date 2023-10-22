@@ -74,29 +74,45 @@ Component.Snake = function(canvas, conf) {
   // Game Stage
   this.stage = new Component.Stage(canvas, conf);
   
-  // Init Snake
-  this.initSnake = function() {
+// Init Snake
+this.initSnake = function() {
+    
+    // Calculate middle of the board
+    var middleX = Math.round((this.stage.width / this.stage.conf.cw) / 2);
+    var middleY = Math.round((this.stage.height / this.stage.conf.cw) / 2);
     
     // Itaration in Snake Conf Size
     for (var i = 0; i < this.stage.conf.size; i++) {
       
       // Add Snake Cells
-      this.stage.length.push({x: i, y:0});
-		}
-	};
+      this.stage.length.push({x: middleX - i, y:middleY});
+    }
+};
+
   
   // Call init Snake
   this.initSnake();
   
   // Init Food  
   this.initFood = function() {
-		
-    // Add food on stage
-    this.stage.food = {
-			x: Math.round(Math.random() * (this.stage.width - this.stage.conf.cw) / this.stage.conf.cw), 
-			y: Math.round(Math.random() * (this.stage.height - this.stage.conf.cw) / this.stage.conf.cw), 
-		};
-	};
+    
+    function isCollisionWithSnake(x, y, snakeArray) {
+        for(var i = 0; i < snakeArray.length; i++) {
+            if(snakeArray[i].x === x && snakeArray[i].y === y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    do {
+        this.stage.food = {
+            x: Math.round(Math.random() * (this.stage.width - this.stage.conf.cw) / this.stage.conf.cw), 
+            y: Math.round(Math.random() * (this.stage.height - this.stage.conf.cw) / this.stage.conf.cw), 
+        };
+    } while (isCollisionWithSnake(this.stage.food.x, this.stage.food.y, this.stage.length));
+};
+
   
   // Init Food
   this.initFood();
@@ -150,10 +166,12 @@ Game.Draw = function(context, snake) {
         ny++;
         break;
     }
+
+
     
     // Check Collision
     if (this.collision(nx, ny) == true) {
-      snake.restart();
+      this.gameOver();
       return;
     }
     
@@ -162,6 +180,7 @@ Game.Draw = function(context, snake) {
       var tail = {x: nx, y: ny};
       snake.stage.score++;
       snake.initFood();
+
     } else {
       var tail = snake.stage.length.pop();
       tail.x   = nx;
@@ -190,18 +209,26 @@ Game.Draw = function(context, snake) {
     context.fill();
   };
   
-  // Check Collision with walls or itself
-  this.collision = function(nx, ny) {  
-    if (nx == -1 || nx == (snake.stage.width / snake.stage.conf.cw) || ny == -1 || ny == (snake.stage.height / snake.stage.conf.cw)) {
+// Check Collision with walls or itself
+this.collision = function(nx, ny) {  
+  if (nx == -1 || nx == (snake.stage.width / snake.stage.conf.cw) || ny == -1 || ny == (snake.stage.height / snake.stage.conf.cw)) {
+    return true;
+  }
+  for (var i = 1; i < snake.stage.length.length; i++) {  // Start from 1, not 0
+    if (snake.stage.length[i].x == nx && snake.stage.length[i].y == ny) {
       return true;
     }
-    for (var i = 0; i < snake.stage.length.length; i++) {
-      if (snake.stage.length[i].x == nx && snake.stage.length[i].y == ny) {
-        return true;
-      }
-    }
-    return false;    
   }
+  return false;    
+}
+
+  
+  // Game Over
+  this.gameOver = function() {
+    alert("あかんやん　スコア: " + snake.stage.score);
+    snake.restart();
+  }
+  
 
 };
 
@@ -223,7 +250,7 @@ Game.Snake = function(elementId, conf) {
 
 
 /**
- * Window Load
+ * ロード
  */
 window.onload = function() {
   var snake = new Game.Snake('stage', {fps: 100, size: 4});
